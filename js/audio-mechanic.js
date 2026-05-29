@@ -20,8 +20,10 @@ class AudioWeatherMechanic {
     this.started = false;
 
     this.windNoise = null;
+
+    // Thunder is built from a low rumble oscillator plus a short noise crack.
     this.thunderOsc = null;
-    this.thunderFilter = null;
+    this.thunderNoise = null;
 
     this.amp = null;
     this.fft = null;
@@ -32,7 +34,11 @@ class AudioWeatherMechanic {
 
     this.windNoisePosition = random(3000);
     this.nextThunderAt = 0;
-    this.thunderEnvelope = 0;
+
+    // Two envelopes make thunder more readable:
+    // rumble = long low sound, crack = short bright impact.
+    this.thunderRumbleEnvelope = 0;
+    this.thunderCrackEnvelope = 0;
 
     this.button = null;
   }
@@ -47,23 +53,29 @@ class AudioWeatherMechanic {
     // Start the audio context only after user interaction.
     userStartAudio();
 
-    // Wind: filtered noise creates a soft environmental wind bed.
+    // Wind: brown noise creates a soft environmental wind bed.
     this.windNoise = new p5.Noise("brown");
     this.windNoise.amp(0);
     this.windNoise.start();
 
-    // Thunder: low oscillator pulse.
+    // Low thunder rumble.
     this.thunderOsc = new p5.Oscillator("sine");
-    this.thunderOsc.freq(58);
+    this.thunderOsc.freq(48);
     this.thunderOsc.amp(0);
     this.thunderOsc.start();
+
+    // Short noisy thunder crack. This makes the thunder perceptible,
+    // because a pure low sine wave can sound too subtle on laptop speakers.
+    this.thunderNoise = new p5.Noise("brown");
+    this.thunderNoise.amp(0);
+    this.thunderNoise.start();
 
     // Analyse final output. This follows the p5.sound tutorial pattern.
     this.amp = new p5.Amplitude(0.85);
     this.fft = new p5.FFT(0.8, 64);
 
     this.started = true;
-    this.nextThunderAt = millis() + 1200;
+    this.nextThunderAt = millis() + 900;
   }
 
   toggleSound() {
@@ -82,7 +94,7 @@ class AudioWeatherMechanic {
   update() {
     if (!this.started) {
       // Without sound started, use gentle fallback values so the visual still works.
-      rainState.thunderLevel = 0.08;
+      rainState.thunderLevel = 0.10;
       rainState.windLevel = 0.2;
       rainState.windPan = 0;
       return;
@@ -90,29 +102,47 @@ class AudioWeatherMechanic {
 
     // Wind intensity changes smoothly using noise().
     let windN = noise(this.windNoisePosition);
-    this.windLevel = map(windN, 0, 1, 0.05, 0.48);
+    this.windLevel = map(windN, 0, 1, 0.05, 0.42);
     this.windPan = map(noise(this.windNoisePosition + 50), 0, 1, -0.75, 0.75);
     this.windNoisePosition += 0.004;
 
-    this.windNoise.amp(this.windLevel, 0.25);
+    this.windNoise.amp(this.windLevel * 0.42, 0.35);
     this.windNoise.pan(this.windPan);
 
-    // Create thunder events at changing intervals.
+    // Thunder events happen at changing intervals, with a stronger chance during storm stages.
+    let stormFactor = constrain(rainState.timeRainBoost, 0.6, 1.7);
     if (millis() > this.nextThunderAt) {
-      this.thunderEnvelope = random(0.45, 0.95);
-      this.thunderOsc.freq(random(42, 78));
-      this.nextThunderAt = millis() + random(4200, 8500);
+      this.thunderRumbleEnvelope = random(0.62, 1.0);
+      this.thunderCrackEnvelope = random(0.45, 0.88);
+      this.thunderOsc.freq(random(34, 64));
+
+      // Storm periods trigger thunder more often.
+      this.nextThunderAt = millis() + random(2600, 7600) / stormFactor;
     }
 
-    // Thunder fades down after each pulse.
-    this.thunderEnvelope *= 0.91;
-    this.thunderOsc.amp(this.thunderEnvelope * 0.62, 0.08);
+    // Envelope decay. The crack fades quickly; the rumble fades slowly.
+    this.thunderCrackEnvelope *= 0.76;
+    this.thunderRumbleEnvelope *= 0.94;
 
-    // Analyse the sound. Use both measured amplitude and the procedural envelope.
+    // Audible procedural thunder.
+    this.thunderOsc.amp(this.thunderRumbleEnvelope * 0.55, 0.08);
+    this.thunderNoise.amp(this.thunderCrackEnvelope * 0.38, 0.04);
+    this.thunderNoise.pan(random(-0.18, 0.18));
+
+    // Analyse the sound. Use measured amplitude and the procedural envelopes.
     let measuredLevel = this.amp ? this.amp.getLevel() : 0;
     let lowEnergy = this.fft ? this.fft.getEnergy("bass") / 255 : 0;
 
-    this.thunderLevel = constrain(max(this.thunderEnvelope, measuredLevel * 3, lowEnergy * 0.7), 0, 1);
+    this.thunderLevel = constrain(
+      max(
+        this.thunderRumbleEnvelope * 0.9,
+        this.thunderCrackEnvelope,
+        measuredLevel * 3.2,
+        lowEnergy * 0.75
+      ),
+      0,
+      1
+    );
 
     rainState.thunderLevel = this.thunderLevel;
     rainState.windLevel = this.windLevel;

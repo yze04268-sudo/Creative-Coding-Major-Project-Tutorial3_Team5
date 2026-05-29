@@ -45,10 +45,8 @@ function setup() {
 
 function draw() {
   drawAtmosphericBackground();
-  drawMosaicCity();
-  drawMoon();
 
-  // Update each mechanic independently.
+  // Update each mechanic independently before drawing the atmospheric layers.
   audioMechanic.update();
   timeMechanic.update();
   perlinMechanic.update();
@@ -57,8 +55,11 @@ function draw() {
   // Combine mechanic outputs into rain behaviour.
   combineMechanics();
 
-  // Particle fog should appear behind rainfall but above the city.
+  drawMosaicCity();
+
+  // Pixel fog is now visible between the city and the rain/moon layers.
   perlinMechanic.displayFog();
+  drawMoon();
 
   // Draw rain.
   let activeDropCount = floor(maxDrops * rainState.rainDensity);
@@ -77,6 +78,7 @@ function draw() {
 
   inputMechanic.display();
   timeMechanic.displayLightning();
+  drawThunderPixelFlash();
   drawInterfaceText();
 }
 
@@ -108,24 +110,31 @@ function drawAtmosphericBackground() {
   // Dark base colour. The horizontal scan-line gradient has been removed.
   background(4, 8, 18);
 
-  // Subtle vertical weather shafts. These keep the code visually connected to rainfall,
-  // but avoid the dense horizontal stripe texture from the earlier version.
+  // Subtle vertical pixel weather shafts. These keep the rain-room atmosphere
+  // while matching the mosaic city rather than creating horizontal stripes.
   push();
-  for (let i = 0; i < 34; i++) {
-    let x = map(i, 0, 33, 0, width);
+  noStroke();
+  let grid = 10;
+  for (let i = 0; i < 42; i++) {
+    let x = map(i, 0, 41, 0, width);
     let n = noise(i * 0.13, frameCount * 0.003);
-    let alpha = map(n, 0, 1, 6, 22);
-    let blue = map(n, 0, 1, 45, 85);
-    stroke(35, 58, blue, alpha);
-    strokeWeight(map(n, 0, 1, 1, 3));
-    line(x, 0, x + rainState.rainAngle * 80, height);
+    let alpha = map(n, 0, 1, 4, 18);
+    let blue = map(n, 0, 1, 36, 78);
+
+    for (let y = 0; y < height; y += grid * 2) {
+      let local = noise(i * 0.3, y * 0.006, frameCount * 0.004);
+      if (local > 0.58) {
+        fill(30, 52, blue, alpha * local);
+        rect(round((x + rainState.rainAngle * y * 0.04) / grid) * grid, y, grid * 0.65, grid * 1.5);
+      }
+    }
   }
   pop();
 }
 
 function drawMoon() {
-  // The old central ellipse now works as a moon/light source.
-  // Its form slowly moves between a near-full circle and a crescent.
+  // The old central ellipse now works as a pixel-style moon/light source.
+  // Its form slowly moves between a round moon and a crescent.
   push();
   noStroke();
 
@@ -133,29 +142,45 @@ function drawMoon() {
   let moonY = height * 0.31;
   let moonSize = min(width, height) * 0.34;
 
-  // Brightness breathes slowly and also reacts slightly to lightning.
-  let breathing = map(sin(frameCount * 0.018), -1, 1, 0.55, 1.0);
-  let stormFlash = map(rainState.lightningAlpha, 0, 255, 0, 0.45);
-  let moonAlpha = 22 + breathing * 42 + stormFlash * 38;
+  // Brightness breathes slowly and also reacts to thunder/lightning.
+  let breathing = map(sin(frameCount * 0.018), -1, 1, 0.52, 1.0);
+  let thunderFlash = map(rainState.thunderLevel, 0, 1, 0, 0.65);
+  let moonAlpha = 24 + breathing * 46 + thunderFlash * 42;
 
-  // Phase controls the offset of the dark overlay.
-  // Low value = rounder moon, high value = stronger crescent.
   let phase = map(sin(frameCount * 0.006), -1, 1, 0.04, 0.68);
 
-  // Soft outer glow, keeping the previous blue colour direction.
-  fill(95, 125, 185, moonAlpha * 0.28);
-  ellipse(moonX, moonY, moonSize * 1.9, moonSize * 1.18);
+  // Outer pixel glow: squares instead of smooth ellipses.
+  let grid = max(8, floor(moonSize / 28));
+  for (let gx = -moonSize; gx <= moonSize; gx += grid) {
+    for (let gy = -moonSize * 0.72; gy <= moonSize * 0.72; gy += grid) {
+      let nx = gx / (moonSize * 0.95);
+      let ny = gy / (moonSize * 0.58);
+      let d = nx * nx + ny * ny;
+      if (d < 1.0) {
+        let fade = map(d, 0, 1, 1, 0);
+        fill(95, 125, 185, moonAlpha * 0.10 * fade);
+        rect(moonX + gx, moonY + gy, grid * 1.05, grid * 1.05, 1);
+      }
+    }
+  }
 
-  fill(95, 125, 185, moonAlpha);
-  ellipse(moonX, moonY, moonSize, moonSize);
+  // Main moon body with pixel-grid squares.
+  let moonGrid = max(7, floor(moonSize / 32));
+  for (let gx = -moonSize * 0.5; gx <= moonSize * 0.5; gx += moonGrid) {
+    for (let gy = -moonSize * 0.5; gy <= moonSize * 0.5; gy += moonGrid) {
+      let inMain = gx * gx + gy * gy < sq(moonSize * 0.5);
+      let coverX = gx - moonSize * phase;
+      let inCover = coverX * coverX + sq(gy + moonSize * 0.02) < sq(moonSize * 0.48);
 
-  // Dark overlay creates the crescent without changing the moon colour palette.
-  fill(4, 8, 18, 180);
-  ellipse(moonX + moonSize * phase, moonY - moonSize * 0.02, moonSize * 0.96, moonSize * 1.02);
-
-  // A second faint glow keeps the moon atmospheric rather than graphic-flat.
-  fill(95, 125, 185, moonAlpha * 0.14);
-  ellipse(moonX, moonY, moonSize * 1.25, moonSize * 1.25);
+      if (inMain && !inCover) {
+        let edge = dist(gx, gy, 0, 0) / (moonSize * 0.5);
+        let local = noise(gx * 0.02, gy * 0.02, frameCount * 0.01);
+        let a = moonAlpha * map(edge, 0, 1, 1.0, 0.56) * map(local, 0, 1, 0.72, 1.12);
+        fill(95, 125, 185, a);
+        rect(moonX + gx, moonY + gy, moonGrid * 1.08, moonGrid * 1.08, 1);
+      }
+    }
+  }
   pop();
 }
 
@@ -235,6 +260,26 @@ function drawMosaicCity() {
   rect(0, height * 0.88, width, height * 0.12);
   pop();
 }
+
+function drawThunderPixelFlash() {
+  // A brief blocky flash helps the procedural thunder feel visible as well as audible.
+  let flash = rainState.thunderLevel;
+  if (flash < 0.42) return;
+
+  push();
+  noStroke();
+  let grid = 18;
+  let alpha = map(flash, 0.42, 1, 0, 34);
+  for (let x = 0; x < width; x += grid) {
+    let local = noise(x * 0.02, frameCount * 0.09);
+    if (local > 0.62) {
+      fill(210, 225, 255, alpha * local);
+      rect(x, 0, grid, height);
+    }
+  }
+  pop();
+}
+
 
 function drawInterfaceText() {
   push();

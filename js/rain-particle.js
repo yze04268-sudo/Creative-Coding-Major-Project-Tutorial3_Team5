@@ -56,14 +56,22 @@ class RainDrop {
 
   display(angle) {
     push();
-    stroke(205, 225, 255, this.alpha);
-    strokeWeight(this.weight);
+    noStroke();
 
-    // The rain line is angled by wind. This uses a simple x offset rather than rotating
-    // the whole canvas, so it stays easy to read and debug.
+    // Pixel-style rain: each drop is drawn as several small blocks along its fall path.
+    // This keeps the rain readable but makes it fit the mosaic city style.
     let x2 = this.x + sin(angle) * this.length * 1.8;
     let y2 = this.y + cos(angle) * this.length;
-    line(this.x, this.y, x2, y2);
+    let steps = max(2, floor(this.length / 9));
+    let blockSize = max(1.5, this.weight * 1.45);
+
+    fill(205, 225, 255, this.alpha);
+    for (let i = 0; i < steps; i++) {
+      let t = i / steps;
+      let px = lerp(this.x, x2, t);
+      let py = lerp(this.y, y2, t);
+      rect(round(px / 2) * 2, round(py / 2) * 2, blockSize, blockSize * 2.8, 1);
+    }
     pop();
 
     if (this.splashLife > 0) {
@@ -74,10 +82,12 @@ class RainDrop {
 
   displaySplash() {
     push();
-    noFill();
-    stroke(210, 230, 255, this.splashLife * 18);
-    strokeWeight(1);
-    arc(this.splashX, this.splashY, 18 - this.splashLife, 8, PI, TWO_PI);
+    noStroke();
+    fill(210, 230, 255, this.splashLife * 17);
+    let spread = 18 - this.splashLife;
+    rect(this.splashX - spread * 0.5, this.splashY, 4, 3, 1);
+    rect(this.splashX + spread * 0.5, this.splashY, 4, 3, 1);
+    rect(this.splashX, this.splashY + 2, 3, 3, 1);
     pop();
   }
 }
