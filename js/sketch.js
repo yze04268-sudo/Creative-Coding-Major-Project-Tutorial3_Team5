@@ -191,13 +191,15 @@ function rebuildCitySystem() {
   let baseY = height * 0.92;
   let x = -30;
   let palette = [
-    [38, 115, 220],   // electric blue
-    [120, 160, 220],  // cold blue
-    [255, 238, 180],  // warm white
-    [255, 150, 70],   // orange
-    [210, 72, 58],    // red
-    [180, 105, 190],  // muted violet
-    [235, 245, 255]   // white
+    [45, 145, 255],    // brighter electric blue
+    [80, 205, 255],    // cyan
+    [255, 246, 185],   // warm white
+    [255, 176, 75],    // brighter orange
+    [255, 92, 82],     // neon red
+    [210, 115, 255],   // violet
+    [255, 120, 205],   // pink
+    [165, 235, 115],   // green
+    [245, 250, 255]    // white
   ];
 
   while (x < width + 80) {
@@ -208,7 +210,7 @@ function rebuildCitySystem() {
       y: baseY - buildingH,
       w: buildingW,
       h: buildingH,
-      alpha: random(115, 175)
+      alpha: random(135, 205)
     };
     cityBuildings.push(building);
 
@@ -226,7 +228,7 @@ function rebuildCitySystem() {
             colour: random(palette),
             phase: random(TWO_PI),
             speed: random(0.012, 0.042),
-            baseAlpha: random(35, 170)
+            baseAlpha: random(70, 240)
           });
         }
       }
@@ -242,21 +244,21 @@ function drawMosaicCity() {
 
   // Distant building silhouettes.
   for (let building of cityBuildings) {
-    fill(3, 6, 14, building.alpha);
+    fill(6, 12, 28, building.alpha);
     rect(building.x, building.y, building.w, building.h, 2);
   }
 
   // Coloured lights flicker independently, like a distant digital city.
   for (let light of cityLights) {
     let flicker = map(sin(frameCount * light.speed + light.phase), -1, 1, 0.18, 1.0);
-    let weatherFade = map(rainState.rainDensity, 0.35, 2.25, 1.0, 0.58);
+    let weatherFade = map(rainState.rainDensity, 0.35, 2.25, 1.08, 0.78);
     let alpha = light.baseAlpha * flicker * weatherFade;
     fill(light.colour[0], light.colour[1], light.colour[2], alpha);
     circle(light.x, light.y, light.size);
   }
 
   // A darker ground band anchors the city behind the interactive umbrella.
-  fill(2, 4, 10, 160);
+  fill(2, 4, 10, 125);
   rect(0, height * 0.88, width, height * 0.12);
   pop();
 }
