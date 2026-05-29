@@ -21,6 +21,7 @@ const rainState = {
   // Perlin mechanic outputs
   perlinWind: 0,
   fogShift: 0,
+  fogDensity: 0.8,
 
   // User input mechanic outputs
   umbrellaX: 0,
