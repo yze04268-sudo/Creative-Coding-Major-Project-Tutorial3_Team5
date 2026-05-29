@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Rain Room</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #05070d;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    button {
+      font-size: 14px;
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 18px;
+      background: rgba(5, 8, 18, 0.72);
+      color: white;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- p5.js and p5.sound are required for visual drawing and audio analysis. -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.sound.min.js"></script>
+
+  <!-- Each mechanic is kept in a separate file to match the final assessment requirement. -->
+  <script src="js/global-state.js"></script>
+  <script src="js/rain-particle.js"></script>
+  <script src="js/perlin-mechanic.js"></script>
+  <script src="js/time-mechanic.js"></script>
+  <script src="js/audio-mechanic.js"></script>
+  <script src="js/input-mechanic.js"></script>
+  <script src="js/sketch.js"></script>
+</body>
+</html>
