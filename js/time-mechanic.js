@@ -8,6 +8,9 @@
 
 */
 
+// I use ChatGPT to help me refine the coding logic and correct my mistakes. 
+// The concept and the art style were developed through discussions among the three of us.
+
 class TimeWeatherMechanic {
   constructor() {
     this.loopDuration = 60000; // 60-second atmospheric loop
