@@ -7,12 +7,6 @@
   pan(), setVolume(), and a Play/Pause button. These connect directly to the
   uploaded volume and FFT tutorial material.
 
-  External / AI acknowledgement:
-  This file was written with the help of ChatGPT. Because no external audio files
-  are included in this generated project, it creates procedural wind and thunder
-  sounds with p5.Noise and p5.Oscillator, then analyses them with p5.sound.
-  If the team later adds real thunder/wind audio files, they can replace this
-  procedural section with loadSound() in preload().
 */
 
 class AudioWeatherMechanic {

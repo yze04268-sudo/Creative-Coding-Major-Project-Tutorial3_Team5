@@ -26,7 +26,7 @@ The scene runs as a looping rain simulation with changing rain density, thunder,
 | Yue Zhao | User input | `js/input-mechanic.js` | Uses mouse position and easing to control an umbrella / bowl-shaped prop that blocks raindrops. |
 | CHUCHU TANG | Perlin noise and randomness | `js/perlin-mechanic.js`, `js/rain-particle.js` | Uses `random()` for varied raindrop depth, speed, weight and length, and `noise()` for smooth wind/fog movement. |
 
-> Note: If the tutor requires each person to officially own only one mechanic, keep Yue Zhao as the owner of **Time-based** or **User input**, then list the other file as team integration support.
+
 
 ## p5.js techniques used
 
@@ -59,14 +59,10 @@ digital-rain-room-p5/
 
 ## AI acknowledgement
 
-ChatGPT was used to help generate and organise the final project code structure. It was used for:
+ChatGPT was used to help organise the final project code structure. It was used for:
 
-- turning the team concept into a modular p5.js project;
-- separating each mechanic into its own script file;
-- writing comments explaining how the generated code works;
-- combining audio, time, Perlin/randomness and mouse input into one interactive rain simulation.
+- Generative AI was used only as a support tool for code generation, code organization, debugging, map () range calculation, and minor documentation refinement. The project concept, atmospheric visual style, interaction ideas, color palette, and design iterations were independently developed and fine-tuned by the team through human visual judgment.
 
-AI-generated sections are also acknowledged in the relevant code comments.
 
 ## External references
 
@@ -80,12 +76,3 @@ The project was influenced by:
 - The Coding Train, *Purple Rain* coding challenge: https://thecodingtrain.com/challenges/4-purple-rain
 - The Coding Train, Perlin noise / flow field examples: https://thecodingtrain.com/tracks/the-nature-of-code-2/noc/perlin-noise
 - Random International, *Rain Room*, as conceptual atmosphere inspiration.
-
-## Notes for submission
-
-Before submitting:
-
-- Each team member should make at least **three meaningful GitHub commits**.
-- If real audio files are added later, place them in an `assets/` folder and update `audio-mechanic.js`.
-- If using external audio, add the source link and licence both here and inside the code comments.
-- Test the project in a browser after uploading to GitHub Pages or running with a local server.

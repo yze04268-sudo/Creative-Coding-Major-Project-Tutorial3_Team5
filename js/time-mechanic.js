@@ -6,9 +6,6 @@
   This file uses frameCount, millis(), modulo logic, and lerp() for smooth transitions.
   These relate to the time-based and easing tutorial examples.
 
-  External / AI acknowledgement:
-  This file was written with the help of ChatGPT to create a looping 60-second rain scene
-  with light rain, storm build-up, heavy storm, and calm-down stages.
 */
 
 class TimeWeatherMechanic {

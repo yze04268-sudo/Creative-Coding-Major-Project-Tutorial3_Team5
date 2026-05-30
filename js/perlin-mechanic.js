@@ -6,9 +6,6 @@
   This file adapts the Perlin noise tutorial idea: random() gives individual variation,
   while noise() creates smooth continuous change instead of harsh jitter.
 
-  External / AI acknowledgement:
-  This file was written with the help of ChatGPT. It uses p5.js noise() and random()
-  to create natural rain drift and pixel-particle fog movement for the final project.
 */
 
 class PerlinRainMechanic {

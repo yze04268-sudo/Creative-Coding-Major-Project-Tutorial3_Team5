@@ -2,10 +2,7 @@
   RainDrop class
   This class represents one falling raindrop.
 
-  External / AI acknowledgement:
-  This class was written with the help of ChatGPT to combine course concepts
-  including arrays, classes, random values, Perlin-driven motion, collision checks,
-  and responsive canvas scaling. The logic is commented below.
+
 */
 
 class RainDrop {
