@@ -14,20 +14,25 @@
   the umbrella position.
 */
 
+// As for AI usage, drawing the umbrella and aliens was the hardest part. We have already designed their appearances and used ChatGPT to accurately refine our designs.
+// create umbrella
 class InputUmbrellaMechanic {
   constructor() {
+    //umbrella
     this.x = 0;
     this.y = 0;
+    //mouse
     this.targetX = 0;
     this.targetY = 0;
     this.w = 180;
     this.h = 55;
+    //make the movement smoother
     this.easing = 0.12;
 
     // Aliens follow the umbrella horizontally, but remain grounded at the bottom.
     this.aliensX = 0;
   }
-
+// core frame update function
   update() {
     this.targetX = mouseX || width / 2;
     this.targetY = mouseY || height * 0.68;
@@ -49,7 +54,7 @@ class InputUmbrellaMechanic {
     rainState.umbrellaWidth = this.w;
     rainState.umbrellaHeight = this.h;
   }
-
+// I referenced video by Youtuber Patt Vira, who used the collide() function to create an effect of catching falling letter rain https://www.youtube.com/watch?v=vVXizarOnrU&t=948s
   getCollisionShape() {
     return {
       x: this.x,
@@ -79,7 +84,7 @@ class InputUmbrellaMechanic {
     const D = [168, 28, 132, 245];     // shadow
     const O = [10, 12, 22, 245];       // dark pixel outline
     const H = [255, 210, 244, 230];    // small shine
-
+// I used ChatGPT to help me draw the umbrella.
     const rows = [
       ".............OOO..............",
       "..........OOOPPPOOO...........",
@@ -138,7 +143,7 @@ class InputUmbrellaMechanic {
 
     pop();
   }
-
+// I used ChatGPT to help me draw those three aliens, which represents the three of us.
   displayAliens() {
     push();
 

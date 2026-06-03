@@ -13,7 +13,8 @@
 
 class TimeWeatherMechanic {
   constructor() {
-    this.loopDuration = 60000; // 60-second atmospheric loop
+    this.loopDuration = 60000; // weather cycle
+    // different weather stages
     this.stage = "light rain";
     this.targetRainBoost = 1;
     this.currentRainBoost = 1;
@@ -46,8 +47,11 @@ class TimeWeatherMechanic {
 
     // Lightning is more frequent during the heavy-storm section.
     if (millis() > this.nextLightningAt) {
+      //when current time passes next lightning timestamp, roll lightning dice. 75% lightning on heavy strom, else 22% 
       let stormChance = this.stage === "heavy storm" ? 0.75 : 0.22;
+    
       if (random() < stormChance) {
+        // random opacity
         this.lightningAlpha = random(90, 210);
       }
       this.nextLightningAt = millis() + random(1800, 5200);

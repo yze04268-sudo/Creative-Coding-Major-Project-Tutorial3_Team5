@@ -73,6 +73,13 @@ The project was influenced by:
 - p5.js `noise()` reference: https://p5js.org/reference/#/p5/noise
 - p5.js `random()` reference: https://p5js.org/reference/#/p5/random
 - p5.js `lerp()` reference: https://p5js.org/reference/#/p5/lerp
+- p5.js `collide()` reference: https://www.youtube.com/watch?v=vVXizarOnrU&t=948s
+- p5.js rain reference1: https://www.youtube.com/watch?v=YQysSfaLDyo
+- p5.js rain reference2: https://www.youtube.com/shorts/N_U4YXLNxvY
 - The Coding Train, *Purple Rain* coding challenge: https://thecodingtrain.com/challenges/4-purple-rain
 - The Coding Train, Perlin noise / flow field examples: https://thecodingtrain.com/tracks/the-nature-of-code-2/noc/perlin-noise
 - Random International, *Rain Room*, as conceptual atmosphere inspiration.
+ 
+## character designs
+![umbrella](./asset/umbrella.jpg)
+![aliens](./asset/aliens.png)
